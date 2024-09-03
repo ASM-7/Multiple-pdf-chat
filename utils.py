@@ -1,6 +1,8 @@
 from PyPDF2 import PdfReader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 import os
+import pickle
+import streamlit as st
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 import google.generativeai as genai
 from langchain.vectorstores import FAISS
@@ -11,6 +13,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
+
+allow_dangerous_deserialization = True
 
 # Extract text from PDF
 def get_pdf_text(pdf_docs):
@@ -58,10 +62,11 @@ def get_conversational_chain():
 """
 Processes the user's question by searching for similar documents in a FAISS vector store and generating a detailed response using a conversational AI model.
 """
+
 def user_input(user_question):
     embeddings = GoogleGenerativeAIEmbeddings(model = "models/embedding-001")
     
-    new_db = FAISS.load_local("faiss_index", embeddings)
+    new_db = FAISS.load_local("faiss_index", embeddings, allow_dangerous_deserialization=True)
     docs = new_db.similarity_search(user_question)
 
     chain = get_conversational_chain()
@@ -72,10 +77,7 @@ def user_input(user_question):
         , return_only_outputs=True)
 
     print(response)
-    # st.write("Reply: ", response["output_text"])
-    return response
-
-
+    st.write("Reply: ", response["output_text"])
 
 
 
