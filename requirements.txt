@@ -7,4 +7,5 @@ chromadb
 faiss-cpu
 langchain_google_genai
 langchain-community
-pickle==0.0.12 
+sentence-transformers
+langchain-huggingface

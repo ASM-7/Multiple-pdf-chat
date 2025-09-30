@@ -4,11 +4,12 @@ import os
 import pickle
 import streamlit as st
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
+from langchain_huggingface import HuggingFaceEmbeddings
 import google.generativeai as genai
-from langchain.vectorstores import FAISS
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.chains.question_answering import load_qa_chain
 from langchain.prompts import PromptTemplate
+from langchain_community.vectorstores import FAISS
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -34,7 +35,8 @@ def get_text_chunks(text):
 # Generate a vector store from text chunks using Google Generative AI embeddings and saves it as a local FAISS index.
 
 def get_vector_store(text_chunks):
-    embeddings = GoogleGenerativeAIEmbeddings(model = "models/embedding-001")
+    # embeddings = GoogleGenerativeAIEmbeddings(model = "models/embedding-001")
+    embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
     vector_store = FAISS.from_texts(text_chunks, embedding=embeddings)
     vector_store.save_local("faiss_index")
 
